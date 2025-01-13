@@ -1,0 +1,69 @@
+@import url("https://fonts.googleapis.com/css2?family=Oswald:wght@200;300;400;500;600;700&display=swap");
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+.hide {
+    display: none !important;
+}
+body{
+    font-family: 'Oswald', sans-serif;
+    background-color: #f5f5f5;
+}
+.back{
+    background-image: url("./images/mountain.jpg");
+    background-size: cover;
+    height: 100vh;
+    width: 100%;
+    background-position: center;
+}
+.container{
+    display: grid;
+    place-items: center;
+    font-size: 2rem;
+    height: 100vh;
+}
+.setting{
+    position: absolute;
+    bottom: 30px;
+    right: 30px;
+    display: flex;
+    gap: 10px;
+}
+.setting .fa-cog{
+    font-size: 2rem;
+    color: white;
+}
+.setting .setting-Content{
+    display: flex;
+    gap: 10px;
+}
+
+.setting .setting-Content .dob input{
+    border: none;
+    outline: none;
+    background-color: transparent;
+    color: white;
+    font-size: 1rem;
+}
+.setting .setting-Content button{
+    padding: 5px 10px;
+    background-color: green;
+    border-radius: 10px;
+    border: none;
+    color: white;
+}
+.time{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+    font-size: 2rem;
+}
+.time div{
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

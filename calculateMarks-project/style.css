@@ -1,0 +1,141 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700&display=swap");
+:root {
+  --primary: #393e3e;
+  --secondary: #145c72;
+  --secondary-light: #00a0d1;
+}
+
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html{
+    font-family: 'Poppins', sans-serif;
+    font-size: 62.5%;    
+}
+body{
+    font-size: 1.6rem;
+}
+
+.background{
+    background-image: url(./background.png);
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 100vh;
+}
+.box{
+    height: 50rem;
+    width: 80%;
+    background-color: var(--primary);
+    border: 5px solid var(--secondary);
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 3.5rem;
+}
+
+.container{
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    gap: 4rem;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+.content{
+    color: var(--primary);
+    text-align: center;
+}
+.content h2{
+    font-size: 5rem;
+    font-weight: 500;
+    line-height: 80%;
+}
+.content h1{
+    font-size: 7rem;
+    font-weight: 600;
+    line-height: 90%;
+}
+
+input{
+    height: 4.4rem;
+    padding: 0 2rem;
+    border-radius: 0.5rem;
+    background-color: transparent;
+    border: white 2px solid;
+    color: white;
+    font-size: 1.6rem;
+    width: 100%;
+    max-width: 40rem;
+}
+
+input::placeholder{
+    color: white;
+    font-size: 1.6rem;
+}
+
+.calculate-form{
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 5rem;
+    padding: 5rem;
+    place-content: center; 
+    place-items: center;
+}
+
+input:focus-visible{
+    outline: 2px solid var(--secondary-light);
+    border: 2px solid var(--secondary-light);
+}
+.calculate-form button{
+    grid-column: 1/3;
+}
+.p-btn{
+    font-size: 2.4rem;
+    width: 16rem;
+    padding: 1rem 2rem;
+    border-radius: 2rem;
+    background-color: var(--secondary);
+    color: white;
+    border: none;
+}
+.p-btn:hover{
+    opacity: 0.9;
+}
+.p-btn:active{
+    opacity: 1;
+    background-color: var(--secondary-light);
+}
+
+#result{
+    color: white;
+    font-size: 2.4rem;
+    text-align: center;
+}
+@media(max-width:1400px){
+    .container{
+        width: 100%;
+    }
+    .box{
+        width: 90%;
+    }
+}
+@media(max-width:1400px){
+    .container{
+        width: 100%;
+    }
+    .box{
+        width: 90%;
+    }
+    .calculate-form{
+        grid-template-columns: 1fr;
+        gap: 3rem;
+    }
+    input{
+        max-width: 100%;
+    }
+}

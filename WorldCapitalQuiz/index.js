@@ -13,6 +13,7 @@ const db = new pg.Pool({
   ssl: {
     rejectUnauthorized: false, // Required for Render
   },
+  max: 10, // Limits connections to avoid overload
 });
 
 // Test connection

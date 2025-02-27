@@ -6,7 +6,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = 3000;
 
 const db = new pg.Pool({
   connectionString: process.env.DATABASE_URL,
@@ -15,41 +15,54 @@ const db = new pg.Pool({
   },
 });
 
+// Test connection
+db.connect()
+  .then(() => console.log("✅ Connected to the database"))
+  .catch((err) => console.error("❌ Database connection error:", err.message));
+
+let quiz = [];
+
+// Fetch data from database
+async function fetchQuestions() {
+  try {
+    const result = await db.query("SELECT country, capital FROM capitals");
+    quiz = result.rows;
+    console.log("✅ Data fetched successfully", quiz.length);
+  } catch (error) {
+    console.error("❌ Error fetching data:", error);
+  }
+}
+
+fetchQuestions(); // Call it when server starts
+
+let totalCorrect = 0;
+
 // Middleware
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
-let quiz = [];
-
-// Fetch questions from the database
-async function fetchQuestions() {
-  try {
-    const result = await db.query("SELECT * FROM capitals");
-    quiz = result.rows;
-  } catch (err) {
-    console.error("Error fetching data:", err);
-  }
-}
-
-fetchQuestions();
-
-let totalCorrect = 0;
 let currentQuestion = {};
 
 // GET home page
 app.get("/", async (req, res) => {
   totalCorrect = 0;
   await nextQuestion();
+
+  if (!currentQuestion || !currentQuestion.country) {
+    return res.status(500).send("Error: No questions available. Check database connection.");
+  }
+
   res.render("index.ejs", { question: currentQuestion });
 });
 
-// POST answer
+// POST submit answer
 app.post("/submit", (req, res) => {
   let answer = req.body.answer.trim();
-  let isCorrect = currentQuestion.capital.toLowerCase() === answer.toLowerCase();
+  let isCorrect = false;
 
-  if (isCorrect) {
+  if (currentQuestion.capital.toLowerCase() === answer.toLowerCase()) {
     totalCorrect++;
+    isCorrect = true;
   }
 
   nextQuestion();
@@ -62,11 +75,12 @@ app.post("/submit", (req, res) => {
 
 async function nextQuestion() {
   if (quiz.length === 0) {
-    await fetchQuestions();
+    console.error("❌ No questions available. Check database connection.");
+    return;
   }
   currentQuestion = quiz[Math.floor(Math.random() * quiz.length)];
 }
 
 app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+  console.log(`🚀 Server is running at http://localhost:${port}`);
 });

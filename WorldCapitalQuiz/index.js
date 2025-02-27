@@ -6,41 +6,41 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
-const db = new pg.Pool({
+// Configure PostgreSQL client
+const db = new pg.Client({
   connectionString: process.env.DATABASE_URL,
   ssl: {
-    rejectUnauthorized: false, // Required for Render
+    rejectUnauthorized: false, // Required for Render PostgreSQL
   },
-  max: 10, // Limits connections to avoid overload
 });
 
-// Test connection
+// Connect to database
 db.connect()
-  .then(() => console.log("✅ Connected to the database"))
-  .catch((err) => console.error("❌ Database connection error:", err.message));
+  .then(() => console.log("Connected to PostgreSQL"))
+  .catch((err) => console.error("Database connection error:", err.stack));
 
 let quiz = [];
-
-// Fetch data from database
-async function fetchQuestions() {
-  try {
-    const result = await db.query("SELECT country, capital FROM capitals");
-    quiz = result.rows;
-    console.log("✅ Data fetched successfully", quiz.length);
-  } catch (error) {
-    console.error("❌ Error fetching data:", error);
-  }
-}
-
-fetchQuestions(); // Call it when server starts
-
 let totalCorrect = 0;
 
 // Middleware
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("public"));
+
+// Fetch quiz data from database
+async function loadQuizData() {
+  try {
+    const result = await db.query("SELECT * FROM capitals");
+    quiz = result.rows;
+    console.log("Quiz data loaded:", quiz);
+  } catch (err) {
+    console.error("Error fetching quiz data:", err.stack);
+  }
+}
+
+// Initialize quiz data
+await loadQuizData();
 
 let currentQuestion = {};
 
@@ -48,16 +48,11 @@ let currentQuestion = {};
 app.get("/", async (req, res) => {
   totalCorrect = 0;
   await nextQuestion();
-
-  if (!currentQuestion || !currentQuestion.country) {
-    return res.status(500).send("Error: No questions available. Check database connection.");
-  }
-
   res.render("index.ejs", { question: currentQuestion });
 });
 
 // POST submit answer
-app.post("/submit", (req, res) => {
+app.post("/submit", async (req, res) => {
   let answer = req.body.answer.trim();
   let isCorrect = false;
 
@@ -66,7 +61,7 @@ app.post("/submit", (req, res) => {
     isCorrect = true;
   }
 
-  nextQuestion();
+  await nextQuestion();
   res.render("index.ejs", {
     question: currentQuestion,
     wasCorrect: isCorrect,
@@ -74,14 +69,14 @@ app.post("/submit", (req, res) => {
   });
 });
 
+// Function to get the next random question
 async function nextQuestion() {
   if (quiz.length === 0) {
-    console.error("❌ No questions available. Check database connection.");
-    return;
+    await loadQuizData();
   }
   currentQuestion = quiz[Math.floor(Math.random() * quiz.length)];
 }
 
 app.listen(port, () => {
-  console.log(`🚀 Server is running at http://localhost:${port}`);
+  console.log(`Server is running at http://localhost:${port}`);
 });
